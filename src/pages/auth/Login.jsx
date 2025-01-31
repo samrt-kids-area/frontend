@@ -40,7 +40,6 @@ const Login = () => {
         toast.error(res.error.data.message);
       }
       if ("data" in res) {
-        console.log(res.data.admin);
         dispatch(setUser(res.data));
         localStorage.setItem("token", res.data.token);
         toast.success("Login successful");

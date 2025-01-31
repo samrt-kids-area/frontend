@@ -48,6 +48,27 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
+
+    getAllParents: builder.query({
+      query: (q) => ({
+        url: `/api/parent/get-all-parents?${q}`,
+        method: "GET",
+      }),
+    }),
+    addParent: builder.mutation({
+      query: (body) => ({
+        url: "/api/parent/create-parent",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    getAllChildren: builder.query({
+      query: (q) => ({
+        url: `/api/children/get-all-children?${q}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -55,4 +76,7 @@ export const {
   useLoginMutation,
   useForgetPasswordMutation,
   useGetUserMutation,
+  useGetAllParentsQuery,
+  useAddParentMutation,
+  useGetAllChildrenQuery,
 } = apiSlice;

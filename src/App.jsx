@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, setUser } from "./redux/feature/userSlice";
 import Loader from "./components/Loader";
+import Parents from "./pages/parents";
+import Children from "./pages/children";
 
 function App() {
   const [getUser] = useGetUserMutation();
@@ -46,11 +48,8 @@ function App() {
           path="/children/in-session"
           element={<div>Children in session</div>}
         />
-        <Route
-          path="/children/all-children"
-          element={<div>All children</div>}
-        />
-        <Route path="/parents" element={<div>Parents</div>} />
+        <Route path="/children/all-children" element={<Children />} />
+        <Route path="/parents" element={<Parents />} />
         <Route path="/employees" element={<div>Employees</div>} />
 
         <Route path="*" element={<Navigate to="/" />} />
