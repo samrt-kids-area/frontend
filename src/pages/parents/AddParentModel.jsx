@@ -2,46 +2,23 @@ import React from "react";
 import { useAddParentMutation } from "../../redux/services/apiSlice";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-
-const inputInfo = [
-  {
-    label: "Name",
-    type: "text",
-    id: "name",
-  },
-  {
-    label: "Email",
-    type: "email",
-    id: "email",
-  },
-  {
-    label: "Phone",
-    type: "tel",
-    id: "phone",
-  },
-  // image upload
-  {
-    label: "Image",
-    type: "file",
-    id: "photos",
-  },
-];
+import { inputParentInfo } from "./data";
+import PropTypes from "prop-types";
 
 const AddParentModel = ({ refetch }) => {
   const [showModal, setShowModal] = React.useState(false);
-  const [addParent, { isLoading, isError }] = useAddParentMutation();
+  const [addParent, { isLoading }] = useAddParentMutation();
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       name: "",
       email: "",
       phone: "",
-      photo: "test",
+      photo: null,
     },
   });
 
   const onSubmit = async (data) => {
-    delete data.photos;
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
       formData.append(key, data[key]);
@@ -52,7 +29,6 @@ const AddParentModel = ({ refetch }) => {
       toast.success("Parent added successfully");
       setShowModal(!showModal);
     }
-    console.log(res);
     if ("error" in res) {
       toast.error(res.error.data.message);
     }
@@ -112,14 +88,17 @@ const AddParentModel = ({ refetch }) => {
 
             {/* Body */}
             <div className="p-4 md:p-5  flex flex-wrap gap-4">
-              {inputInfo.map((input) =>
+              {inputParentInfo.map((input) =>
                 input.type === "file" ? (
                   <div key={input.id} className="w-full md:w-[48%]">
                     <input
                       className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                       id={input.id}
                       type="file"
-                      {...register(input.id)}
+                      accept="image/*"
+                      onChange={(e) => {
+                        setValue("photo", e.target.files[0]);
+                      }}
                     />
                   </div>
                 ) : (
@@ -133,6 +112,14 @@ const AddParentModel = ({ refetch }) => {
                     {...register(input.id)}
                   />
                 )
+              )}
+              {watch("photo") && (
+                <div className="w-full border h-[300px] overflow-hidden rounded-lg relative">
+                  <img
+                    src={URL.createObjectURL(watch("photo"))}
+                    className="absolute top-0 left-0 w-full h-full object-cover"
+                  />
+                </div>
               )}
             </div>
 
@@ -164,6 +151,10 @@ const AddParentModel = ({ refetch }) => {
       </div>
     </>
   );
+};
+
+AddParentModel.propTypes = {
+  refetch: PropTypes.func.isRequired,
 };
 
 export default AddParentModel;

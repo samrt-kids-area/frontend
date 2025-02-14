@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
-import AddChildModel from "./AddChildModel";
+import React, { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import ChildrenTable from "./ChildrenTable";
 import { useGetAllChildrenQuery } from "../../redux/services/apiSlice";
+import AddChildrenModel from "../../components/addChildrenModel";
 
 const Children = () => {
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = useState("");
+  const [addChilToParent, setAddChilToParent] = useState(false);
   const { data, isLoading, isError, refetch } = useGetAllChildrenQuery(
     "search=" + search
   );
@@ -68,13 +69,23 @@ const Children = () => {
           </div>
         </form>
         <div className="">
-          <AddChildModel refetch={refetch} />
+          <button
+            className="bg-blue-700 text-white rounded-md py-2 px-4"
+            onClick={() => setAddChilToParent(true)}
+          >
+            Add Children
+          </button>
+          <AddChildrenModel
+            refetch={refetch}
+            setShowAddChildren={setAddChilToParent}
+            showAddChildren={addChilToParent}
+          />
         </div>
       </div>
       {isLoading ? (
         <Loader />
       ) : (
-        data && <ChildrenTable children={data.children} />
+        data && <ChildrenTable childrenData={data.children} refetch={refetch} />
       )}
     </div>
   );

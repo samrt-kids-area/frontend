@@ -68,7 +68,11 @@ const Parents = () => {
           <AddParentModel refetch={refetch} />
         </div>
       </div>
-      {isLoading ? <Loader /> : data && <ParentTable parents={data.parents} />}
+      {isLoading ? (
+        <Loader />
+      ) : (
+        data && <ParentTable parents={data.parents} refetch={refetch} />
+      )}
     </div>
   );
 };

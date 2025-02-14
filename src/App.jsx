@@ -58,6 +58,7 @@ function App() {
   ) : (
     <Routes>
       <Route path="/auth/login" element={<Login />} />
+      <Route path="/verify/:id" element={<div>Settings</div>} />
       <Route path="*" element={<Navigate to="/auth/login" />} />
     </Routes>
   );

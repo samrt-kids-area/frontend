@@ -1,6 +1,13 @@
+import { Pencil, Trash, User } from "lucide-react";
 import PropTypes from "prop-types";
 
-const Row = ({ parent }) => {
+const Row = ({
+  parent,
+  setDeleteParent,
+  setEditParentData,
+  setAddChilToParent,
+  setShowAddChildren,
+}) => {
   return (
     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
       <th
@@ -11,13 +18,30 @@ const Row = ({ parent }) => {
       </th>
       <td className="px-6 py-4">{parent.email}</td>
       <td className="px-6 py-4">{parent.phone}</td>
-      <td className="px-6 py-4 text-right">
-        <a
-          href="#"
-          className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-        >
-          Edit
-        </a>
+      <td>
+        <ul className="flex gap-4">
+          <li
+            onClick={() => setDeleteParent(parent)}
+            className="cursor-pointer"
+          >
+            <Trash />
+          </li>
+          <li
+            className="cursor-pointer"
+            onClick={() => setEditParentData(parent)}
+          >
+            <Pencil />
+          </li>
+          <li
+            className="cursor-pointer"
+            onClick={() => {
+              setShowAddChildren(true);
+              setAddChilToParent(parent);
+            }}
+          >
+            <User />
+          </li>
+        </ul>
       </td>
     </tr>
   );
@@ -25,6 +49,9 @@ const Row = ({ parent }) => {
 
 Row.propTypes = {
   parent: PropTypes.object.isRequired,
+  setDeleteParent: PropTypes.func.isRequired,
+  setEditParentData: PropTypes.func.isRequired,
+  setAddChilToParent: PropTypes.func.isRequired,
 };
 
 export default Row;

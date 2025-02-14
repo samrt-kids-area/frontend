@@ -48,6 +48,12 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
+    verifiyAdmin: builder.query({
+      query: (q) => ({
+        url: `/api/admin/verify/email/${q}`,
+        method: "GET",
+      }),
+    }),
 
     getAllParents: builder.query({
       query: (q) => ({
@@ -62,11 +68,44 @@ export const apiSlice = createApi({
         body,
       }),
     }),
+    deleteParent: builder.mutation({
+      query: (id) => ({
+        url: `/api/parent/delete-parent/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    editParent: builder.mutation({
+      query: ({ body, id }) => ({
+        url: `/api/parent/update-parent/${id}`,
+        method: "PUT",
+        body,
+      }),
+    }),
 
     getAllChildren: builder.query({
       query: (q) => ({
         url: `/api/children/get-all-children?${q}`,
         method: "GET",
+      }),
+    }),
+    addChildren: builder.mutation({
+      query: ({ body, id }) => ({
+        url: `/api/children/create-child/${id}`,
+        method: "POST",
+        body,
+      }),
+    }),
+    deleteChildren: builder.mutation({
+      query: (id) => ({
+        url: `/api/children/delete-child/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    editChildren: builder.mutation({
+      query: ({ body, id }) => ({
+        url: `/api/children/update-child/${id}`,
+        method: "PUT",
+        body,
       }),
     }),
   }),
@@ -79,4 +118,10 @@ export const {
   useGetAllParentsQuery,
   useAddParentMutation,
   useGetAllChildrenQuery,
+  useDeleteParentMutation,
+  useEditParentMutation,
+  useAddChildrenMutation,
+  useDeleteChildrenMutation,
+  useEditChildrenMutation,
+  useVerifiyAdminQuery,
 } = apiSlice;
