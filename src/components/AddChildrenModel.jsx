@@ -7,6 +7,7 @@ import {
 import toast from "react-hot-toast";
 import PropTypes from "prop-types";
 import { ChevronUpIcon } from "lucide-react";
+import axios from "axios";
 
 const AddChildrenModel = ({
   showAddChildren,
@@ -27,7 +28,7 @@ const AddChildrenModel = ({
   const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       name: "",
-      photo: null,
+      photoURL: null,
     },
   });
 
@@ -36,14 +37,33 @@ const AddChildrenModel = ({
     Object.keys(data).forEach((key) => {
       formData.append(key, data[key]);
     });
-    const res = await addChildren({ body: formData, id: parentData._id });
-    if ("data" in res) {
-      refetch();
-      toast.success("Children added successfully");
-      setShowAddChildren(false);
+    const resPhoto = await addChildren({ body: formData, id: parentData._id });
+    const imageURL = resPhoto.data?.imageUrl;
+    formData.delete("photoURL");
+    formData.append("photoURL", imageURL);
+    formData.append("parentId", parentData._id);
+    if ("data" in resPhoto) {
+      const resData = await axios.post(
+        `${import.meta.env.VITE_BASE_URL_REGISTER_CHILD}/register-child`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if ("data" in resData) {
+        refetch();
+        toast.success("Children added successfully");
+        setShowAddChildren(false);
+      }
+      if ("error" in resData) {
+        return toast.error(resPhoto.error.data.message);
+      }
     }
-    if ("error" in res) {
-      toast.error(res.error.data.message);
+    if ("error" in resPhoto) {
+      return toast.error(resPhoto.error.data.message);
     }
   };
 

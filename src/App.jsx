@@ -10,6 +10,7 @@ import { logout, setUser } from "./redux/feature/userSlice";
 import Loader from "./components/Loader";
 import Parents from "./pages/parents";
 import Children from "./pages/children";
+import Test from "./Test";
 
 function App() {
   const [getUser] = useGetUserMutation();
@@ -57,6 +58,7 @@ function App() {
     </Layout>
   ) : (
     <Routes>
+      <Route path="/test-cam" element={<Test />} />
       <Route path="/auth/login" element={<Login />} />
       <Route path="/verify/:id" element={<div>Settings</div>} />
       <Route path="*" element={<Navigate to="/auth/login" />} />

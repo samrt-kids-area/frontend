@@ -108,6 +108,13 @@ export const apiSlice = createApi({
         body,
       }),
     }),
+    checkFace: builder.mutation({
+      query: (body) => ({
+        url: "/check-face",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -124,4 +131,5 @@ export const {
   useDeleteChildrenMutation,
   useEditChildrenMutation,
   useVerifiyAdminQuery,
+  useCheckFaceMutation,
 } = apiSlice;
