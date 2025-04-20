@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   useAddChildrenMutation,
@@ -25,6 +25,12 @@ const AddChildrenModel = ({
     refetch: refetchParent,
   } = useGetAllParentsQuery("search=" + search);
 
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [imageBlob, setImageBlob] = useState(null);
+  const [showCamera, setShowCamera] = useState(false);
+
   const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       name: "",
@@ -37,6 +43,7 @@ const AddChildrenModel = ({
     Object.keys(data).forEach((key) => {
       formData.append(key, data[key]);
     });
+    formData.append("photo", imageBlob ? imageBlob : data.photo);
     const resPhoto = await addChildren({ body: formData, id: parentData._id });
     const imageURL = resPhoto.data?.imageUrl;
     formData.delete("photoURL");
@@ -64,6 +71,35 @@ const AddChildrenModel = ({
     }
     if ("error" in resPhoto) {
       return toast.error(resPhoto.error.data.message);
+    }
+  };
+
+  const takePhoto = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataURL = canvas.toDataURL("image/png");
+    console.log(dataURL);
+    setImageSrc(dataURL);
+
+    canvas.toBlob((blob) => {
+      setImageBlob(blob); // حفظ الصورة كـ Blob
+    }, "image/png");
+  };
+
+  const getCameraStream = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+      videoRef.current.srcObject = stream;
+    } catch (err) {
+      console.error("Error accessing camera: ", err);
     }
   };
 
@@ -200,6 +236,43 @@ const AddChildrenModel = ({
                 />
               </div>
             )}
+            <div className="flex flex-col gap-3">
+              <div>
+                <p
+                  className="text-blue-500 cursor-pointer"
+                  onClick={() => {
+                    setShowCamera(!showCamera);
+                    if (!showCamera) getCameraStream();
+                  }}
+                >
+                  {showCamera ? "Close Camera" : "Take Photo by Camera"}
+                </p>
+              </div>
+              {showCamera && (
+                <div>
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    style={{ width: "100%", maxWidth: "100%" }}
+                  />
+                  <button onClick={takePhoto}>📸 التقط صورة</button>
+
+                  <canvas ref={canvasRef} style={{ display: "none" }} />
+
+                  {imageBlob && (
+                    <div>
+                      <h4>الصورة الملتقطة:</h4>
+                      <img
+                        src={URL.createObjectURL(imageBlob)}
+                        alt="Captured"
+                        style={{ width: "100%", maxWidth: "100%" }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Footer */}
