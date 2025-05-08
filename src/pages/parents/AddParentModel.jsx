@@ -4,10 +4,13 @@ import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { inputParentInfo } from "./data";
 import PropTypes from "prop-types";
+import SuccessAddingParentModel from "./SuccessAddingParentModel";
 
 const AddParentModel = ({ refetch }) => {
   const [showModal, setShowModal] = React.useState(false);
   const [addParent, { isLoading }] = useAddParentMutation();
+  const [successAddingParent, setSuccessAddingParent] = React.useState(false);
+  const [parentData, setParentData] = React.useState(null);
 
   const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
@@ -25,9 +28,11 @@ const AddParentModel = ({ refetch }) => {
     });
     const res = await addParent(formData);
     if ("data" in res) {
+      setSuccessAddingParent(true);
+      setParentData(res.data);
       refetch();
       toast.success("Parent added successfully");
-      setShowModal(!showModal);
+      setShowModal(false);
     }
     if ("error" in res) {
       toast.error(res.error.data.message);
@@ -149,6 +154,10 @@ const AddParentModel = ({ refetch }) => {
           ></div>
         )}
       </div>
+      <SuccessAddingParentModel
+        parentData={parentData}
+        successAddingParent={successAddingParent}
+      />
     </>
   );
 };

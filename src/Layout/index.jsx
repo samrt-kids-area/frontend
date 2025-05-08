@@ -1,8 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Sidebar from "./Sidebar";
+import { useGetUserMutation } from "../redux/services/apiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, setUser } from "../redux/feature/userSlice";
+import { Loader } from "lucide-react";
+import { Navigate } from "react-router-dom";
 
 const Layout = ({ children }) => {
   const [openSidebar, setOpenSidebar] = React.useState(false);
+
+  const [getUser] = useGetUserMutation();
+  const dispatch = useDispatch();
+  const { isLoading, isAuthenticated } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const res = await getUser({});
+          if ("error" in res) dispatch(logout());
+          else dispatch(setUser(res.data.admin));
+        } else dispatch(logout());
+      } catch (error) {
+        console.log(error);
+        dispatch(logout());
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
+
+  if (!isAuthenticated) return <Navigate to="/auth/login" />;
+
   return (
     <>
       <div className="flex justify-between sm:hidden">

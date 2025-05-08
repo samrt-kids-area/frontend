@@ -81,6 +81,19 @@ export const apiSlice = createApi({
         body,
       }),
     }),
+    loginParent: builder.mutation({
+      query: (body) => ({
+        url: "/api/parent/get-parent-by-email-and-password",
+        method: "POST",
+        body,
+      }),
+    }),
+    getParentByToken: builder.query({
+      query: (q) => ({
+        url: `/api/parent/get-parent-by-token`,
+        method: "GET",
+      }),
+    }),
 
     getAllChildren: builder.query({
       query: (q) => ({
@@ -132,4 +145,6 @@ export const {
   useEditChildrenMutation,
   useVerifiyAdminQuery,
   useCheckFaceMutation,
+  useLoginParentMutation,
+  useGetParentByTokenQuery,
 } = apiSlice;

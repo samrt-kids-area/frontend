@@ -6,12 +6,14 @@ import { store } from "./redux/store";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import App from "./App.jsx";
+import IOT from "./components/IOT.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <App />
+  
         <Toaster />
       </BrowserRouter>
     </Provider>

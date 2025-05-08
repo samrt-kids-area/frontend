@@ -11,53 +11,49 @@ import Loader from "./components/Loader";
 import Parents from "./pages/parents";
 import Children from "./pages/children";
 import Test from "./Test";
+import KidsRoom from "./pages/KidsRoom";
+import LayoutParent from "./pages/KidsRoom/LayoutParent";
 
 function App() {
-  const [getUser] = useGetUserMutation();
-  const dispatch = useDispatch();
-  const { isLoading, isAuthenticated } = useSelector((state) => state.user);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const res = await getUser({});
-          if ("error" in res) dispatch(logout());
-          else dispatch(setUser(res.data.admin));
-        } else dispatch(logout());
-      } catch (error) {
-        console.log(error);
-        dispatch(logout());
-      }
-    }
-    fetchData();
-  }, []);
-
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader />
-      </div>
-    );
-
-  return isAuthenticated ? (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<div>Home Page</div>} />
-        <Route
-          path="/children/in-session"
-          element={<div>Children in session</div>}
-        />
-        <Route path="/children/all-children" element={<Children />} />
-        <Route path="/parents" element={<Parents />} />
-        <Route path="/employees" element={<div>Employees</div>} />
-
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </Layout>
-  ) : (
+  return (
     <Routes>
+      <Route
+        path="/"
+        element={
+          <Layout>
+            <div>Home Page</div>{" "}
+          </Layout>
+        }
+      />
+      <Route
+        path="/children/in-session"
+        element={
+          <Layout>
+            <div>Children in session</div>
+          </Layout>
+        }
+      />
+      <Route
+        path="/children/all-children"
+        element={
+          <Layout>
+            <Children />
+          </Layout>
+        }
+      />
+      <Route
+        path="/parents"
+        element={
+          <Layout>
+            <Parents />
+          </Layout>
+        }
+      />
+      <Route path="/employees" element={<div>Employees</div>} />
+
+      <Route path="/parent/login" element={<Login role="parent" />} />
+      <Route path="/parent/rooms" element={<KidsRoom />} />
+
       <Route path="/test-cam" element={<Test />} />
       <Route path="/auth/login" element={<Login />} />
       <Route path="/verify/:id" element={<div>Settings</div>} />

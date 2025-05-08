@@ -1,4 +1,7 @@
-import { useLoginMutation } from "../../redux/services/apiSlice";
+import {
+  useLoginMutation,
+  useLoginParentMutation,
+} from "../../redux/services/apiSlice";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -6,6 +9,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/feature/userSlice";
+import { setParent } from "../../redux/feature/parentSlice";
 
 const loginSchema = yup
   .object({
@@ -20,8 +24,9 @@ const loginSchema = yup
   })
   .required();
 
-const Login = () => {
+const Login = ({ role = "admin" }) => {
   const [login] = useLoginMutation();
+  const [loginParent] = useLoginParentMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -35,15 +40,22 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await login(data);
-      if ("error" in res) {
-        toast.error(res.error.data.message);
-      }
+      let res;
+      if (role === "admin") res = await login(data);
+      else res = await loginParent(data);
+
+      if ("error" in res) toast.error(res.error.data.message);
+
       if ("data" in res) {
-        dispatch(setUser(res.data));
         localStorage.setItem("token", res.data.token);
         toast.success("Login successful");
-        navigate("/");
+        if (role === "admin") {
+          dispatch(setUser(res.data));
+          navigate("/");
+        } else {
+          dispatch(setParent(res.data));
+          navigate("/parent/rooms");
+        }
       }
     } catch (error) {
       console.log(error);

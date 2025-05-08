@@ -38,7 +38,7 @@ const AddChildrenModel = ({
     },
   });
 
-  const onSubmit = async (data) => {
+  /*  const onSubmit = async (data) => {
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
       formData.append(key, data[key]);
@@ -71,6 +71,56 @@ const AddChildrenModel = ({
     }
     if ("error" in resPhoto) {
       return toast.error(resPhoto.error.data.message);
+    }
+  }; */
+
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      Object.keys(data).forEach((key) => {
+        formData.append(key, data[key]);
+      });
+
+      // رفع الصورة أولاً
+      formData.append("photo", imageBlob ? imageBlob : data.photo);
+      const resPhoto = await addChildren({
+        body: formData,
+        id: parentData._id,
+      });
+
+      if ("error" in resPhoto) {
+        return toast.error(resPhoto.error.data.message);
+      }
+
+      const imageURL = resPhoto.data?.imageUrl;
+
+      // الآن جهز بيانات التسجيل في السيرفر
+      const registerForm = new FormData();
+      registerForm.append("image", imageBlob ? imageBlob : data.photo);
+      registerForm.append("childName", data.name); // تأكد أن "name" موجود في الفورم
+      registerForm.append("parentId", parentData._id);
+
+      const resData = await axios.post(
+        `${import.meta.env.VITE_BASE_URL_REGISTER_CHILD}/register-child`,
+        registerForm,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if ("data" in resData) {
+        refetch();
+        toast.success("Child registered successfully");
+        setShowAddChildren(false);
+      } else {
+        toast.error("Registration failed.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred.");
     }
   };
 
@@ -208,8 +258,8 @@ const AddChildrenModel = ({
                   {getAllParentLoding
                     ? "Loading..."
                     : data && (
-                        <>
-                          <ul className="mt-2">
+                        <div className="overflow-scroll h-[150px]">
+                          <ul className="mt-2   h-max">
                             {data.parents.map((parent) => (
                               <li
                                 key={parent.id}
@@ -223,7 +273,7 @@ const AddChildrenModel = ({
                               </li>
                             ))}
                           </ul>
-                        </>
+                        </div>
                       )}
                 </div>
               )}
