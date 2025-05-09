@@ -8,7 +8,7 @@ function IOT() {
   });
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8000");
+    const ws = new WebSocket(import.meta.env.VITE_BASE_URL_BACKEND);
 
     ws.onmessage = (event) => {
       const incomingData = JSON.parse(event.data);
